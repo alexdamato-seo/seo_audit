@@ -136,8 +136,54 @@ class SEOSuggestion(BaseModel):
     suggested_meta: str
 
 
-def generate_suggestions(client, result):
-    """Call Claude to generate an improved title and meta for a flagged page."""
+def slug_to_label(slug):
+    """Turn a URL slug segment into a readable label."""
+    return slug.replace("-", " ").replace("_", " ").title()
+
+
+def generate_suggestions_local(result):
+    """Generate rule-based title and meta suggestions from scraped page data."""
+    url = result["url"]
+    parts = url.replace("https://evidentscientific.com/en/", "").rstrip("/").split("/")
+
+    h1 = result.get("h1", "").strip()
+    h2_list = [h.strip() for h in result.get("h2s", "").split(",") if h.strip()]
+    category = slug_to_label(parts[0]) if parts else ""
+    topic = slug_to_label(parts[-1]) if parts else ""
+
+    # --- Suggested title ---
+    # Prefer H1 if it fits, otherwise build from slug
+    if h1 and len(h1) <= 60:
+        sug_title = h1
+    elif h1:
+        # Trim H1 to fit
+        sug_title = h1[:57].rsplit(" ", 1)[0] + "..."
+    else:
+        base = f"{topic} | Evident Scientific"
+        sug_title = base if len(base) <= 60 else topic
+    # Ensure it fits
+    if len(sug_title) > 60:
+        sug_title = sug_title[:57].rsplit(" ", 1)[0] + "..."
+
+    # --- Suggested meta ---
+    # Build from H2s if available, otherwise use topic + category
+    if h2_list:
+        features = ", ".join(h2_list[:2])
+        base_meta = f"Explore {topic} from Evident Scientific. {features}. Request a quote today."
+    else:
+        base_meta = (
+            f"Discover Evident Scientific's {topic} for {category}. "
+            f"High-performance solutions for researchers and industry. Request a quote."
+        )
+    # Trim to 155
+    if len(base_meta) > 155:
+        base_meta = base_meta[:152].rsplit(" ", 1)[0] + "..."
+
+    return sug_title, base_meta
+
+
+def generate_suggestions_ai(client, result):
+    """Call Claude API to generate an improved title and meta for a flagged page."""
     slug = result["url"].replace("https://evidentscientific.com/en/", "")
 
     prompt = (
@@ -365,24 +411,29 @@ def main():
         if i < len(urls_with_gsc) - 1:
             time.sleep(1)  # polite crawl delay
 
-    # Generate AI suggestions for flagged URLs
+    # Generate suggestions for all flagged URLs
+    flagged = [r for r in results if r.get("flags", "OK") != "OK" and not r.get("error")]
+
+    # Always run local rule-based suggestions first
+    print(f"\nGenerating suggestions for {len(flagged)} flagged URL(s)...")
+    for r in flagged:
+        sug_title, sug_meta = generate_suggestions_local(r)
+        r["suggested_title"] = sug_title
+        r["suggested_meta"]  = sug_meta
+
+    # Upgrade to AI suggestions if API key is available
     api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        print("\nNote: ANTHROPIC_API_KEY not set — skipping AI suggestions.")
-    else:
+    if api_key:
         ai_client = anthropic.Anthropic(api_key=api_key)
-        flagged = [r for r in results if r.get("flags", "OK") != "OK" and not r.get("error")]
-        print(f"\nGenerating AI suggestions for {len(flagged)} flagged URL(s)...")
+        print("API key found — upgrading to AI suggestions...")
         for r in flagged:
             try:
-                sug_title, sug_meta = generate_suggestions(ai_client, r)
+                sug_title, sug_meta = generate_suggestions_ai(ai_client, r)
                 r["suggested_title"] = sug_title
                 r["suggested_meta"]  = sug_meta
-                print(f"  Done: {r['url'].split('/en/')[-1]}")
+                print(f"  AI done: {r['url'].split('/en/')[-1]}")
             except Exception as e:
-                print(f"  Error on {r['url']}: {e}")
-                r["suggested_title"] = ""
-                r["suggested_meta"]  = ""
+                print(f"  AI failed for {r['url'].split('/en/')[-1]}, keeping rule-based suggestion.")
 
     # CSV
     fieldnames = [
