@@ -1,5 +1,8 @@
+import os
 import requests
 from bs4 import BeautifulSoup
+from pydantic import BaseModel
+import anthropic
 import csv
 import time
 
@@ -128,6 +131,41 @@ def audit_url(entry):
     }
 
 
+class SEOSuggestion(BaseModel):
+    suggested_title: str
+    suggested_meta: str
+
+
+def generate_suggestions(client, result):
+    """Call Claude to generate an improved title and meta for a flagged page."""
+    slug = result["url"].replace("https://evidentscientific.com/en/", "")
+
+    prompt = (
+        f"You are an SEO specialist writing copy for Evident Scientific, a manufacturer of "
+        f"high-end microscopes and imaging equipment.\n\n"
+        f"Page: {slug}\n"
+        f"Current title: {result.get('title') or 'Missing'}\n"
+        f"Current meta: {result.get('meta_description') or 'Missing'}\n"
+        f"H1: {result.get('h1') or 'Missing'}\n"
+        f"H2s: {result.get('h2s') or 'None'}\n"
+        f"GSC impressions (3 mo): {result['impressions']} | CTR: {result['ctr']}% | Avg position: {result['position']}\n"
+        f"Issues: {result['flags']}\n\n"
+        f"Write an improved title tag (strict max 60 characters) and meta description "
+        f"(strict max 155 characters). The title should lead with the primary keyword. "
+        f"The meta should include a clear benefit and a soft CTA. "
+        f"Do not pad to fill the limit — be concise."
+    )
+
+    response = client.messages.parse(
+        model="claude-opus-4-6",
+        max_tokens=300,
+        messages=[{"role": "user", "content": prompt}],
+        output_format=SEOSuggestion,
+    )
+    s = response.parsed_output
+    return s.suggested_title, s.suggested_meta
+
+
 FLAG_COLORS = {
     "Low CTR":     "#f59e0b",
     "Meta Issue":  "#ef4444",
@@ -193,6 +231,24 @@ def generate_html(results, flag_counts):
     rows = ""
     for r in results:
         slug = r["url"].replace("https://evidentscientific.com/en/", "")
+        sug_title = r.get("suggested_title", "")
+        sug_meta  = r.get("suggested_meta", "")
+
+        def suggestion_cell(text):
+            if not text:
+                return '<span style="color:#475569">—</span>'
+            color = "#ef4444" if len(text) > (60 if "title" in suggestion_cell.__name__ else 155) else "#a78bfa"
+            return f'<span style="color:#a78bfa">{text}</span> <small>({len(text)})</small>'
+
+        sug_title_html = (
+            f'<span style="color:#a78bfa">{sug_title}</span> <small>({len(sug_title)})</small>'
+            if sug_title else '<span style="color:#475569">—</span>'
+        )
+        sug_meta_html = (
+            f'<span style="color:#a78bfa">{sug_meta}</span> <small>({len(sug_meta)})</small>'
+            if sug_meta else '<span style="color:#475569">—</span>'
+        )
+
         rows += f'''
         <tr>
           <td><a href="{r["url"]}" target="_blank">{slug}</a></td>
@@ -201,7 +257,9 @@ def generate_html(results, flag_counts):
           <td>{ctr_bar(r["ctr"])}</td>
           <td>{position_chip(r["position"])}</td>
           <td>{char_cell(r.get("title",""), r.get("title_len",0), True, 60)}</td>
+          <td>{sug_title_html}</td>
           <td>{char_cell(r.get("meta_description",""), r.get("meta_len",0), True, 155)}</td>
+          <td>{sug_meta_html}</td>
           <td class="num">{r.get("word_count","—")}</td>
           <td class="num">{r.get("images_missing_alt","—")}</td>
           <td>{flag_badges(r.get("flags","OK"))}</td>
@@ -280,8 +338,10 @@ def generate_html(results, flag_counts):
       <th>Impressions</th>
       <th>CTR</th>
       <th>Position</th>
-      <th>Title (limit 60)</th>
-      <th>Meta Description (limit 155)</th>
+      <th>Current Title</th>
+      <th>Suggested Title</th>
+      <th>Current Meta</th>
+      <th>Suggested Meta</th>
       <th>Words</th>
       <th>Imgs No Alt</th>
       <th>Flags</th>
@@ -305,10 +365,30 @@ def main():
         if i < len(urls_with_gsc) - 1:
             time.sleep(1)  # polite crawl delay
 
+    # Generate AI suggestions for flagged URLs
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("\nNote: ANTHROPIC_API_KEY not set — skipping AI suggestions.")
+    else:
+        ai_client = anthropic.Anthropic(api_key=api_key)
+        flagged = [r for r in results if r.get("flags", "OK") != "OK" and not r.get("error")]
+        print(f"\nGenerating AI suggestions for {len(flagged)} flagged URL(s)...")
+        for r in flagged:
+            try:
+                sug_title, sug_meta = generate_suggestions(ai_client, r)
+                r["suggested_title"] = sug_title
+                r["suggested_meta"]  = sug_meta
+                print(f"  Done: {r['url'].split('/en/')[-1]}")
+            except Exception as e:
+                print(f"  Error on {r['url']}: {e}")
+                r["suggested_title"] = ""
+                r["suggested_meta"]  = ""
+
     # CSV
     fieldnames = [
         "url", "clicks", "impressions", "ctr", "position",
-        "title", "title_len", "meta_description", "meta_len",
+        "title", "title_len", "suggested_title",
+        "meta_description", "meta_len", "suggested_meta",
         "h1", "h2s", "word_count", "images_missing_alt",
         "canonical", "flags", "error",
     ]
