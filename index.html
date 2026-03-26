@@ -48,7 +48,35 @@
   .badge.ok { background: #166534; color: #bbf7d0; }
 
   footer { margin-top: 2rem; font-size: 0.75rem; color: #475569; text-align: center; }
+
+  /* Expandable detail rows */
+  .toggle-btn { background: none; border: none; color: #60a5fa; cursor: pointer;
+                 font-size: 0.75rem; padding: 0 4px 0 0; transition: transform .2s; }
+  .toggle-btn.open { transform: rotate(90deg); }
+  .detail-row td { padding: 0; }
+  .detail-panel { background: #1e293b; border-top: 1px solid #334155;
+                   padding: 1rem 1.2rem 1rem 2.5rem; }
+  .detail-section { margin-bottom: 0.75rem; }
+  .detail-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+                   letter-spacing: .07em; color: #94a3b8; margin-bottom: 0.4rem; }
+  .rec-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+  .rec-list li { font-size: 0.82rem; color: #cbd5e1; padding-left: 1.2rem; position: relative; }
+  .rec-list li::before { content: "→"; position: absolute; left: 0; color: #a78bfa; }
 </style>
+<script>
+  function toggleRow(id) {
+    const row = document.getElementById(id);
+    if (!row) return;
+    const btn = row.previousElementSibling.querySelector('.toggle-btn');
+    if (row.style.display === 'none') {
+      row.style.display = '';
+      if (btn) btn.classList.add('open');
+    } else {
+      row.style.display = 'none';
+      if (btn) btn.classList.remove('open');
+    }
+  }
+</script>
 </head>
 <body>
 <header>
@@ -102,8 +130,8 @@
     </tr>
   </thead>
   <tbody>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/software" target="_blank">life-science-microscopes/software</a></td>
+        <tr class="main-row" onclick="toggleRow('row-0')" style="cursor:default">
+          <td><a href="https://evidentscientific.com/en/life-science-microscopes/software" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/software</a></td>
           <td class="num">176</td>
           <td class="num">16,621</td>
           <td><div class="bar-wrap"><div class="bar" style="width:10.6%;background:#22c55e"></div><span>1.06%</span></div></td>
@@ -116,22 +144,32 @@
           <td class="num">6</td>
           <td><span class="badge ok">OK</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/clinical-microscopes/slide-scanners" target="_blank">clinical-microscopes/slide-scanners</a></td>
+        <tr class="main-row" onclick="toggleRow('row-1')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-1')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/clinical-microscopes/slide-scanners" target="_blank" onclick="event.stopPropagation()">clinical-microscopes/slide-scanners</a></td>
           <td class="num">151</td>
           <td class="num">19,469</td>
           <td><div class="bar-wrap"><div class="bar" style="width:7.8%;background:#f59e0b"></div><span>0.78%</span></div></td>
           <td><span class="chip" style="color:#f59e0b;border-color:#f59e0b">18.9</span></td>
           <td><span title="Digital Pathology Slide Scanners | Evident | Olympus" style="color:#22c55e">Digital Pathology Slide Scanners | Evident | Olympus</span> <small>(52)</small></td>
-          <td><span style="color:#a78bfa">Digital Pathology Slide Scanners | Evident Scientific</span> <small>(53)</small></td>
+          <td><span style="color:#a78bfa">Slide Scanners for Digital Pathology | Evident Scientific</span> <small>(57)</small></td>
           <td><span title="Explore our comprehensive portfolio of digital pathology slide scanners with automation, AI-ready workflows, and renowned optics." style="color:#22c55e">Explore our comprehensive portfolio of digital pathology sli…</span> <small>(129)</small></td>
-          <td><span style="color:#a78bfa">Discover AI-ready digital pathology slide scanners with automated workflows and renowned Olympus optics. Find the right scanner for your lab.</span> <small>(141)</small></td>
+          <td><span style="color:#a78bfa">Discover Evident slide scanners with high-throughput automation, AI-ready workflows, and Olympus optics. Compare models to find your ideal solution.</span> <small>(148)</small></td>
           <td class="num">1272</td>
           <td class="num">10</td>
           <td><span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/clinical-microscopes/inverted" target="_blank">clinical-microscopes/inverted</a></td>
+        <tr class="detail-row" id="row-1" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a side-by-side comparison table of all slide scanner models with key specs (scan speed, capacity, resolution, supported slide types, AI compatibility) so users can quickly evaluate options without leaving the page.</li><li>Create a dedicated section on whole slide imaging (WSI) with technical details—this is a high-volume related query that users searching for slide scanners expect to see addressed, and it can capture additional long-tail traffic.</li><li>Add customer case studies or application spotlights showing real-world digital pathology workflows (e.g., frozen section scanning, IHC quantification, telepathology) to demonstrate practical value and increase dwell time.</li><li>Include a 'How to Choose a Slide Scanner' buyer's guide section addressing throughput needs, integration with LIS/LIMS, regulatory considerations (FDA clearance, CE-IVD), and total cost of ownership—this matches informational intent and builds topical authority.</li><li>Optimize the FAQ section with structured data markup and expand it to cover high-impression queries like 'what is a digital pathology slide scanner,' 'slide scanner vs. microscope,' and 'AI in digital pathology,' which can earn featured snippets and improve CTR from SERPs.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-2')" style="cursor:default">
+          <td><a href="https://evidentscientific.com/en/clinical-microscopes/inverted" target="_blank" onclick="event.stopPropagation()">clinical-microscopes/inverted</a></td>
           <td class="num">10</td>
           <td class="num">4,383</td>
           <td><div class="bar-wrap"><div class="bar" style="width:2.3%;background:#ef4444"></div><span>0.23%</span></div></td>
@@ -144,8 +182,8 @@
           <td class="num">7</td>
           <td><span class="badge ok">OK</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/digital-cameras" target="_blank">digital-cameras</a></td>
+        <tr class="main-row" onclick="toggleRow('row-3')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-3')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/digital-cameras" target="_blank" onclick="event.stopPropagation()">digital-cameras</a></td>
           <td class="num">284</td>
           <td class="num">27,671</td>
           <td><div class="bar-wrap"><div class="bar" style="width:10.3%;background:#22c55e"></div><span>1.03%</span></div></td>
@@ -153,27 +191,47 @@
           <td><span title="Microscope Digital Cameras | Olympus" style="color:#22c55e">Microscope Digital Cameras | Olympus</span> <small>(36)</small></td>
           <td><span style="color:#a78bfa">Microscope Digital Cameras | Evident Scientific</span> <small>(47)</small></td>
           <td><span title="Explore color and monochrome microscope digital cameras designed for a range of observation methods and applications today." style="color:#22c55e">Explore color and monochrome microscope digital cameras desi…</span> <small>(123)</small></td>
-          <td><span style="color:#a78bfa">High-resolution color and monochrome microscope cameras for precise imaging across research and industrial applications. Find your ideal camera today.</span> <small>(150)</small></td>
+          <td><span style="color:#a78bfa">Discover high-resolution color and monochrome microscope cameras for fluorescence, live cell, and routine imaging. Compare models to find your ideal fit.</span> <small>(153)</small></td>
           <td class="num">127</td>
           <td class="num">0</td>
           <td><span class="badge" style="background:#8b5cf6">Thin Content</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/digital-cameras/color" target="_blank">digital-cameras/color</a></td>
+        <tr class="detail-row" id="row-3" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add detailed comparison table of all available camera models showing key specs: sensor type, resolution, frame rate, cooling, sensitivity, and compatible observation methods (brightfield, fluorescence, confocal, etc.)</li><li>Create dedicated sections for camera categories (e.g., 'High-Sensitivity Cameras for Fluorescence,' 'High-Speed Cameras for Live Cell Imaging,' 'Routine Documentation Cameras') with use-case descriptions and sample images captured by each model</li><li>Include a camera selection guide or interactive tool that helps users choose based on their application, microscope compatibility, and budget requirements</li><li>Add application-focused content blocks with real sample images showing output quality across different microscopy techniques — this directly addresses what researchers evaluate when comparing cameras</li><li>Include a section on software integration, explaining how each camera works with Evident's cellSens or PRECiV imaging software, including supported features like stitching, deconvolution, and live measurement</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-4')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-4')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/digital-cameras/color" target="_blank" onclick="event.stopPropagation()">digital-cameras/color</a></td>
           <td class="num">87</td>
           <td class="num">12,909</td>
           <td><div class="bar-wrap"><div class="bar" style="width:6.7%;background:#f59e0b"></div><span>0.67%</span></div></td>
           <td><span class="chip" style="color:#f59e0b;border-color:#f59e0b">19.8</span></td>
           <td><span title="Color Cameras for Digital Microscopes | Evident | Olympus" style="color:#22c55e">Color Cameras for Digital Microscopes | Evident | Olympus</span> <small>(57)</small></td>
-          <td><span style="color:#a78bfa">Color Cameras for Digital Microscopes | Evident</span> <small>(47)</small></td>
+          <td><span style="color:#a78bfa">Digital Microscope Color Cameras | Evident Scientific</span> <small>(53)</small></td>
           <td><span title="Expand your vision in life sciences with the leading-edge digital microscope color camera range from Evident Scientific. Find out more here." style="color:#22c55e">Expand your vision in life sciences with the leading-edge di…</span> <small>(140)</small></td>
-          <td><span style="color:#a78bfa">Capture high-resolution, true-color microscope images with Evident's digital color cameras. Explore models for life science and industrial applications.</span> <small>(152)</small></td>
+          <td><span style="color:#a78bfa">Explore Evident's digital microscope color cameras for life science imaging. Compare models, specs, and find the right camera for your application.</span> <small>(147)</small></td>
           <td class="num">1513</td>
           <td class="num">7</td>
           <td><span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/super-resolution" target="_blank">life-science-microscopes/super-resolution</a></td>
+        <tr class="detail-row" id="row-4" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a comparison table of all color camera models with key specs (resolution, sensor type, frame rate, cooling, interface) so users can quickly evaluate options without clicking into each product page.</li><li>Create a 'How to Choose a Digital Microscope Color Camera' guide section that helps users match camera specs to common applications (fluorescence, brightfield, pathology, live cell imaging), as this targets informational queries driving the high impressions.</li><li>Include sample images captured with each camera model across different specimen types and magnifications — users searching for color cameras want to see real output quality before committing.</li><li>Add a section addressing CCD vs. CMOS sensor technology for microscopy color cameras, explaining trade-offs in sensitivity, speed, and noise — this is a high-intent informational topic that competitors rank for.</li><li>Incorporate structured data (Product schema) for each camera listed on the page to improve rich snippet eligibility in search results and boost CTR from the SERP.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-5')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-5')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/life-science-microscopes/super-resolution" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/super-resolution</a></td>
           <td class="num">49</td>
           <td class="num">15,532</td>
           <td><div class="bar-wrap"><div class="bar" style="width:3.2%;background:#ef4444"></div><span>0.32%</span></div></td>
@@ -181,13 +239,23 @@
           <td><span title="Super Resolution Microscopes | Evident | Olympus" style="color:#22c55e">Super Resolution Microscopes | Evident | Olympus</span> <small>(48)</small></td>
           <td><span style="color:#a78bfa">Super Resolution Microscopes | Evident Scientific</span> <small>(49)</small></td>
           <td><span title="To reveal greater detail inside your samples with clearer and sharper images, browse our range of super resolution microscopes. Find yours today." style="color:#22c55e">To reveal greater detail inside your samples with clearer an…</span> <small>(145)</small></td>
-          <td><span style="color:#a78bfa">Achieve sub-diffraction imaging with Evident super resolution microscopes. Explore systems designed for sharper, more detailed life science research.</span> <small>(149)</small></td>
+          <td><span style="color:#a78bfa">Explore super resolution microscope systems that break the diffraction limit for nanoscale imaging. Compare our solutions and find the right fit for your lab.</span> <small>(158)</small></td>
           <td class="num">575</td>
           <td class="num">4</td>
           <td><span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/stereo" target="_blank">life-science-microscopes/stereo</a></td>
+        <tr class="detail-row" id="row-5" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a technical comparison table of super resolution techniques (STED, SIM, PALM/STORM, SMLM) with resolution limits, speed, and ideal applications so researchers can quickly evaluate which approach fits their work.</li><li>Include a section explaining how Evident's super resolution systems compare to confocal and widefield microscopy, with sample images showing the resolution difference — this addresses a common search intent for users evaluating whether they need super resolution.</li><li>Add real-world application examples with images from specific fields (neuroscience, cell biology, virology) showing what structures and phenomena can be resolved, which builds topical authority and matches long-tail queries.</li><li>Create an interactive or static buyer's guide section that helps users choose between super resolution platforms based on criteria like live-cell compatibility, multicolor capability, throughput, and budget — this improves dwell time and addresses decision-stage intent.</li><li>Add structured FAQ schema markup to the existing FAQ section and expand it with questions researchers actually search, such as 'What is the resolution limit of super resolution microscopy?' and 'Super resolution vs confocal — which is better?' to capture featured snippets and People Also Ask placements.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-6')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-6')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/life-science-microscopes/stereo" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/stereo</a></td>
           <td class="num">497</td>
           <td class="num">84,008</td>
           <td><div class="bar-wrap"><div class="bar" style="width:5.9%;background:#f59e0b"></div><span>0.59%</span></div></td>
@@ -195,13 +263,23 @@
           <td><span title="Stereo Dissecting Microscopes | Olympus" style="color:#22c55e">Stereo Dissecting Microscopes | Olympus</span> <small>(39)</small></td>
           <td><span style="color:#a78bfa">Stereo Dissecting Microscopes | Evident Scientific</span> <small>(50)</small></td>
           <td><span title="The Evident Scientific life science stereo microscopes range enables precise 3D observation, digital imaging, and analysis with high optical quality, and sample dissection with comfortable operation in combination with a variety of ergonomic accessories. Find out more here." style="color:#ef4444">The Evident Scientific life science stereo microscopes range…</span> <small>(274)</small></td>
-          <td><span style="color:#a78bfa">Explore stereo microscopes with precision 3D observation, sharp imaging, and ergonomic design for life science research. Discover the full range today.</span> <small>(151)</small></td>
+          <td><span style="color:#a78bfa">Explore stereo microscopes for precise 3D observation and dissection. High optical quality with ergonomic design. View the full range.</span> <small>(134)</small></td>
           <td class="num">1012</td>
           <td class="num">8</td>
           <td><span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/spinning-disk-confocal" target="_blank">life-science-microscopes/spinning-disk-confocal</a></td>
+        <tr class="detail-row" id="row-6" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a comparison table of stereo vs. micro zoom microscope models with key specs (magnification range, working distance, optical system type) to help users quickly evaluate options and reduce bounce rate.</li><li>Create a dedicated section explaining when to choose a stereo microscope vs. a compound microscope, targeting informational queries and capturing top-of-funnel traffic that currently bypasses this page.</li><li>Include real-world application spotlights with images — e.g., entomology dissection, botanical sample prep, quality inspection — showing the microscopes in use, which improves dwell time and targets long-tail queries like 'best microscope for dissection.'</li><li>Add a 'How to Choose a Stereo Microscope' buyer's guide section covering key decision factors (zoom range, illumination type, camera compatibility, ergonomic accessories) to match search intent for users in the research phase.</li><li>Remove the outdated 'Olympus' branding still present in the title tag and audit all on-page references for brand consistency with Evident Scientific, as mixed branding can confuse both users and search engines.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-7')" style="cursor:default">
+          <td><a href="https://evidentscientific.com/en/life-science-microscopes/spinning-disk-confocal" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/spinning-disk-confocal</a></td>
           <td class="num">127</td>
           <td class="num">12,192</td>
           <td><div class="bar-wrap"><div class="bar" style="width:10.4%;background:#22c55e"></div><span>1.04%</span></div></td>
@@ -214,8 +292,8 @@
           <td class="num">0</td>
           <td><span class="badge ok">OK</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/inverted" target="_blank">life-science-microscopes/inverted</a></td>
+        <tr class="main-row" onclick="toggleRow('row-8')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-8')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/life-science-microscopes/inverted" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/inverted</a></td>
           <td class="num">369</td>
           <td class="num">62,827</td>
           <td><div class="bar-wrap"><div class="bar" style="width:5.9%;background:#f59e0b"></div><span>0.59%</span></div></td>
@@ -223,13 +301,23 @@
           <td><span title="Inverted Microscopes | Olympus" style="color:#22c55e">Inverted Microscopes | Olympus</span> <small>(30)</small></td>
           <td><span style="color:#a78bfa">Inverted Microscopes for Life Science | Evident Scientific</span> <small>(58)</small></td>
           <td><span title="Explore Life Science Inverted Microscopes from Evident Scientific such as the CX53 and the SpinSR today." style="color:#22c55e">Explore Life Science Inverted Microscopes from Evident Scien…</span> <small>(104)</small></td>
-          <td><span style="color:#a78bfa">Discover Evident Scientific's inverted microscopes, including the IXplore system. Achieve superior imaging for live cells and tissues. Explore models today.</span> <small>(156)</small></td>
+          <td><span style="color:#a78bfa">Discover Evident Scientific inverted microscopes designed for live cell imaging, fluorescence, and advanced research. Explore the IXplore series today.</span> <small>(151)</small></td>
           <td class="num">1812</td>
           <td class="num">16</td>
           <td><span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/digital-cameras" target="_blank">material-science-microscopes/digital-cameras</a></td>
+        <tr class="detail-row" id="row-8" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a comparison table between the IXplore models (IXplore Standard, Spin, SpinSR, TIRF, Live) showing key specs like imaging modalities, resolution, and ideal applications so users can quickly identify the right system for their needs.</li><li>Remove the incorrect reference to CX53 in the meta description and page content — the CX53 is an upright microscope, not inverted. Audit all product references for accuracy.</li><li>Add a dedicated section explaining when and why to choose an inverted microscope over an upright one, targeting common informational queries like 'inverted vs upright microscope' which likely drive a significant share of the 62K impressions.</li><li>Include a concise technical specifications summary for each inverted microscope model on the page (objective options, stage compatibility, camera integration, contrast methods like phase contrast and DIC) to satisfy researchers comparing products.</li><li>Add use-case spotlights with images — e.g., live cell time-lapse imaging, stem cell research, IVF applications, wound healing assays — to demonstrate real-world relevance and capture long-tail queries from researchers in specific disciplines.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-9')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-9')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/digital-cameras" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/digital-cameras</a></td>
           <td class="num">75</td>
           <td class="num">13,979</td>
           <td><div class="bar-wrap"><div class="bar" style="width:5.4%;background:#f59e0b"></div><span>0.54%</span></div></td>
@@ -237,13 +325,23 @@
           <td><span title="Digital Cameras for Industrial and Material Science | Evident | Olympus" style="color:#ef4444">Digital Cameras for Industrial and Material Science | Eviden…</span> <small>(71)</small></td>
           <td><span style="color:#a78bfa">Digital Cameras for Microscopes | Evident Scientific</span> <small>(52)</small></td>
           <td><span title="These digital cameras for Industrial and Material science are exclusively designed by Evident Scientific. Gain access to the best digital imaging performance with Evident cameras and software." style="color:#ef4444">These digital cameras for Industrial and Material science ar…</span> <small>(192)</small></td>
-          <td><span style="color:#a78bfa">Explore Evident's digital microscope cameras for industrial and material science imaging. Capture high-resolution images with precision. View our full lineup.</span> <small>(158)</small></td>
+          <td><span style="color:#a78bfa">Explore Evident Scientific's digital microscope cameras for material science and industrial imaging. Compare models to find the right fit. Browse cameras now.</span> <small>(158)</small></td>
           <td class="num">839</td>
           <td class="num">12</td>
           <td><span class="badge" style="background:#ef4444">Title Issue</span> <span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/cleanliness-and-particle-analysis" target="_blank">material-science-microscopes/cleanliness-and-particle-analysis</a></td>
+        <tr class="detail-row" id="row-9" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a comparison table across all camera models (DP75, LC35, DP28, DP23, DP23M) highlighting resolution, frame rate, sensor type, color depth, and connectivity so users can quickly evaluate options without clicking into each product page.</li><li>Create a 'How to Choose the Right Microscope Camera' section that guides visitors based on their application (metallography, quality inspection, failure analysis, etc.) — this targets mid-funnel informational queries and improves dwell time.</li><li>Expand the FAQ section to address high-search-volume questions like 'What resolution do I need for material science imaging?', 'Can I use a digital camera with third-party microscopes?', and 'What is the difference between CCD and CMOS microscope cameras?' to capture featured snippet opportunities.</li><li>Add real-world sample images captured with each camera model across different material science applications (grain structure, coatings, welds, composites) to demonstrate imaging quality and help users visualize output before purchasing.</li><li>Include a dedicated section on software integration, specifically explaining how each camera works with Evident's PRECiV and cellSens software for measurement, reporting, and image stitching — this differentiates from competitors and addresses a key buyer concern.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-10')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-10')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/cleanliness-and-particle-analysis" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/cleanliness-and-particle-analysis</a></td>
           <td class="num">52</td>
           <td class="num">6,632</td>
           <td><div class="bar-wrap"><div class="bar" style="width:7.8%;background:#f59e0b"></div><span>0.78%</span></div></td>
@@ -251,13 +349,23 @@
           <td><span title="Cleanliness and Particle Analysis Microscopes | Evident | Olympus" style="color:#ef4444">Cleanliness and Particle Analysis Microscopes | Evident | Ol…</span> <small>(65)</small></td>
           <td><span style="color:#a78bfa">Cleanliness & Particle Analysis Microscopes | Evident</span> <small>(53)</small></td>
           <td><span title="Streamline component inspection with our cleanliness analysis microscopes. Get accurate, standards-compliant results for automotive, aerospace, and manufacturing QA." style="color:#ef4444">Streamline component inspection with our cleanliness analysi…</span> <small>(165)</small></td>
-          <td><span style="color:#a78bfa">Achieve standards-compliant cleanliness analysis with automated particle detection microscopes. Explore solutions for automotive and aerospace QA.</span> <small>(146)</small></td>
+          <td><span style="color:#a78bfa">Achieve ISO 16232 and VDA 19 compliant cleanliness analysis with Evident microscopes. Explore systems built for automotive and aerospace QA.</span> <small>(140)</small></td>
           <td class="num">2153</td>
           <td class="num">21</td>
           <td><span class="badge" style="background:#ef4444">Title Issue</span> <span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/digital" target="_blank">material-science-microscopes/digital</a></td>
+        <tr class="detail-row" id="row-10" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a dedicated section comparing your systems' compliance with specific standards (ISO 16232, VDA 19, ISO 4406, ISO 4407) — searchers often query by standard name, and this would capture long-tail traffic and answer a key buyer question.</li><li>Include a visual workflow diagram or step-by-step explanation of the cleanliness inspection process (extraction, filtration, microscopic analysis, reporting) to match the informational intent of users researching this topic for the first time.</li><li>Add a product comparison table showing key specs (magnification range, automated vs. manual particle counting, software features, supported standards) across your cleanliness inspection system lineup to help users self-qualify and reduce bounce.</li><li>Create content addressing specific particle types and failure modes — metallic particles, fibers, non-metallic contaminants — and how your systems differentiate and classify them, which aligns with how engineers actually search for solutions to contamination problems.</li><li>Add brief case studies or quantified results (e.g., 'Reduced inspection time by 40%' or 'Achieved ±2μm particle sizing accuracy') to build credibility and improve CTR by giving concrete outcomes users can reference in purchasing decisions.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-11')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-11')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/digital" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/digital</a></td>
           <td class="num">250</td>
           <td class="num">56,033</td>
           <td><div class="bar-wrap"><div class="bar" style="width:4.5%;background:#ef4444"></div><span>0.45%</span></div></td>
@@ -265,13 +373,23 @@
           <td><span title="Digital Microscopes | Evident | Olympus" style="color:#22c55e">Digital Microscopes | Evident | Olympus</span> <small>(39)</small></td>
           <td><span style="color:#a78bfa">Digital Microscopes for Industry & Research | Evident</span> <small>(53)</small></td>
           <td><span title="Evident digital microscopes combine high-resolution imaging, ergonomic viewing, and AI-driven software for real-time inspection, quality control, and research." style="color:#ef4444">Evident digital microscopes combine high-resolution imaging,…</span> <small>(159)</small></td>
-          <td><span style="color:#a78bfa">Explore Evident digital microscopes with high-resolution imaging, AI-driven software, and ergonomic design. Find the right solution for your application.</span> <small>(153)</small></td>
+          <td><span style="color:#a78bfa">Explore Evident digital microscopes with high-resolution imaging and AI-driven analysis for inspection, quality control, and research. Find your solution.</span> <small>(154)</small></td>
           <td class="num">1798</td>
           <td class="num">11</td>
           <td><span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/3d-optical-profilometers" target="_blank">material-science-microscopes/3d-optical-profilometers</a></td>
+        <tr class="detail-row" id="row-11" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a prominent comparison table showing key specs (magnification, resolution, sensor type, software) across your digital microscope models so users can quickly differentiate products — this is what most searchers comparing digital microscopes expect to find.</li><li>Create a dedicated 'Digital vs. Optical Microscopes' section explaining when and why a digital microscope is the better choice, targeting common informational queries that drive top-of-funnel traffic.</li><li>Include an interactive or visual buying guide that helps users select the right digital microscope based on their application (e.g., electronics inspection, failure analysis, metallography, quality assurance) — this improves dwell time and matches high-intent search behavior.</li><li>Add short embedded video demos or 360° product views showing the live imaging workflow and AI-assisted measurement features in action; this differentiates the page from competitors and can earn featured snippet or video carousel placement.</li><li>Expand the FAQ section with specific long-tail queries like 'What magnification do I need for PCB inspection?', 'Can digital microscopes measure surface roughness?', and 'How do digital microscopes connect to reporting software?' — these align with real search queries visible in GSC and can capture position-zero results.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-12')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-12')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/3d-optical-profilometers" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/3d-optical-profilometers</a></td>
           <td class="num">56</td>
           <td class="num">88,838</td>
           <td><div class="bar-wrap"><div class="bar" style="width:0.6%;background:#ef4444"></div><span>0.06%</span></div></td>
@@ -279,13 +397,23 @@
           <td><span title="3D Optical Profilometers | Evident | Olympus" style="color:#22c55e">3D Optical Profilometers | Evident | Olympus</span> <small>(44)</small></td>
           <td><span style="color:#a78bfa">3D Optical Profilometers | Surface Metrology | Evident</span> <small>(54)</small></td>
           <td><span title="Evident 3D optical profilometers deliver high-precision surface measurements for R&D and QA/QC. Inspect coatings, electronics, and transparent materials with traceable accuracy." style="color:#ef4444">Evident 3D optical profilometers deliver high-precision surf…</span> <small>(177)</small></td>
-          <td><span style="color:#a78bfa">Achieve traceable, high-precision surface measurements with Evident 3D optical profilometers. Explore systems built for R&D and QA/QC applications.</span> <small>(147)</small></td>
+          <td><span style="color:#a78bfa">Evident 3D optical profilometers deliver nanometer-level surface measurements for R&D and QA/QC. Compare systems and find the right fit for your application.</span> <small>(157)</small></td>
           <td class="num">1660</td>
           <td class="num">13</td>
           <td><span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/semiconductor-inspection" target="_blank">material-science-microscopes/semiconductor-inspection</a></td>
+        <tr class="detail-row" id="row-12" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a dedicated section comparing optical profilometry vs. stylus profilometry vs. confocal vs. interferometry with a clear specs table (vertical resolution, scan speed, sample limitations) — this directly targets comparison-intent queries and matches existing H2 content that likely needs more depth.</li><li>Include specific technical specifications (Z-resolution, measurement range, scan area, data acquisition speed) for each profilometer system in a scannable comparison table format to satisfy mid-funnel buyers evaluating products.</li><li>Create content addressing 'optical profilometer vs contact profilometer' and 'white light interferometer vs optical profilometer' since these are high-volume comparison queries that could capture users currently landing on competitor pages.</li><li>Add 2–3 brief application case studies with real measurement images (e.g., semiconductor wafer roughness, coating thickness on medical devices, MEMS surface inspection) showing before/after data or specific Ra/Sa values — this builds trust and targets long-tail application-specific searches.</li><li>Expand the FAQ section with schema-marked questions targeting featured snippets: 'What is the accuracy of a 3D optical profilometer?', 'What surface roughness parameters can optical profilometers measure?', and 'How much does a 3D optical profilometer cost?' to capture informational queries and improve SERP visibility.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-13')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-13')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/semiconductor-inspection" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/semiconductor-inspection</a></td>
           <td class="num">62</td>
           <td class="num">14,529</td>
           <td><div class="bar-wrap"><div class="bar" style="width:4.3%;background:#ef4444"></div><span>0.43%</span></div></td>
@@ -293,27 +421,47 @@
           <td><span title="Semiconductor Wafer Inspection Microscopes | Evident | Olympus" style="color:#ef4444">Semiconductor Wafer Inspection Microscopes | Evident | Olympus</span> <small>(62)</small></td>
           <td><span style="color:#a78bfa">Semiconductor Wafer Inspection Microscopes | Evident</span> <small>(52)</small></td>
           <td><span title="Explore our versatile Semiconductor Wafer Inspection microscopes such as our BXFM, BXC, and BXFM-S today." style="color:#22c55e">Explore our versatile Semiconductor Wafer Inspection microsc…</span> <small>(105)</small></td>
-          <td><span style="color:#a78bfa">Inspect semiconductor wafers and flat panel displays with precision. Explore Evident's BXFM, BXC, and BXFM-S inspection microscopes today.</span> <small>(138)</small></td>
+          <td><span style="color:#a78bfa">High-precision semiconductor wafer and flat panel display inspection microscopes from Evident. Explore the BXFM, BXC, and BXFM-S systems today.</span> <small>(143)</small></td>
           <td class="num">628</td>
           <td class="num">4</td>
           <td><span class="badge" style="background:#ef4444">Title Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/confocal" target="_blank">life-science-microscopes/confocal</a></td>
+        <tr class="detail-row" id="row-13" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a comparison table of the BXFM, BXC, and BXFM-S models highlighting key specs like magnification range, inspection modes (DIC, darkfield, brightfield), wafer size compatibility, and automation capabilities so users can quickly differentiate systems.</li><li>Create a dedicated section on common semiconductor inspection challenges (e.g., defect detection on patterned wafers, overlay measurement, bump inspection) and explain how each microscope addresses them — this targets long-tail queries and matches user search intent.</li><li>Include content about supported wafer sizes (200mm, 300mm, 450mm) and flat panel display substrates, as these are critical spec-driven search queries that potential buyers use when evaluating inspection equipment.</li><li>Add customer application stories or case studies from semiconductor fabs demonstrating throughput improvements, defect detection rates, or yield gains achieved with Evident inspection microscopes — this builds credibility and improves dwell time.</li><li>Incorporate a section on integration and automation, covering motorized stages, software compatibility (image analysis, reporting), and cleanroom readiness, as engineers evaluating these systems need to understand how they fit into existing fab workflows.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-14')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-14')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/life-science-microscopes/confocal" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/confocal</a></td>
           <td class="num">147</td>
           <td class="num">50,782</td>
           <td><div class="bar-wrap"><div class="bar" style="width:2.9%;background:#ef4444"></div><span>0.29%</span></div></td>
           <td><span class="chip" style="color:#f59e0b;border-color:#f59e0b">13.9</span></td>
           <td><span title="Confocal and Multiphoton Microscopes | Evident | Olympus" style="color:#22c55e">Confocal and Multiphoton Microscopes | Evident | Olympus</span> <small>(56)</small></td>
-          <td><span style="color:#a78bfa">Confocal & Multiphoton Microscopes | Evident Scientific</span> <small>(55)</small></td>
+          <td><span style="color:#a78bfa">Confocal Microscopes | Laser Scanning Systems | Evident</span> <small>(55)</small></td>
           <td><span title="Discover high-performance confocal and multiphoton microscopes by Evident Scientific, designed for precision imaging, advanced 3D analysis, and unparalleled clarity in life science" style="color:#ef4444">Discover high-performance confocal and multiphoton microscop…</span> <small>(180)</small></td>
-          <td><span style="color:#a78bfa">Explore Evident Scientific's confocal and multiphoton microscopes for high-resolution 3D imaging, fast acquisition, and advanced life science analysis.</span> <small>(151)</small></td>
+          <td><span style="color:#a78bfa">Explore Evident's confocal and multiphoton laser scanning microscopes for high-resolution 3D imaging. Compare systems and find the right fit for your lab.</span> <small>(154)</small></td>
           <td class="num">3095</td>
           <td class="num">13</td>
           <td><span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/coordinate-measuring" target="_blank">material-science-microscopes/coordinate-measuring</a></td>
+        <tr class="detail-row" id="row-14" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a product comparison table directly on the page that contrasts key specs (resolution, scan speed, laser lines, detector types) across your confocal models — this is what researchers compare before requesting a quote and it targets comparison-intent queries.</li><li>Create a dedicated 'How Confocal Microscopy Works' section with an interactive or annotated diagram explaining the pinhole aperture, optical sectioning, and z-stack acquisition. This targets informational queries driving impressions but not clicks, and positions the page for featured snippets.</li><li>Add a section covering confocal vs. multiphoton vs. light sheet microscopy with clear guidance on when to choose each modality. Users searching broadly for confocal microscopes often need help differentiating techniques, and this would capture long-tail traffic.</li><li>Include real sample image galleries organized by application (neuroscience, cell biology, developmental biology, materials science) with acquisition parameters listed. This builds trust, demonstrates capability, and targets image search traffic for application-specific queries.</li><li>Add structured FAQ schema markup to the existing FAQ section, and expand it to include high-search-volume questions like 'What is the resolution of a confocal microscope?', 'What is the difference between confocal and widefield?', and 'How much does a confocal microscope cost?' to capture People Also Ask placements.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-15')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-15')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/coordinate-measuring" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/coordinate-measuring</a></td>
           <td class="num">63</td>
           <td class="num">12,678</td>
           <td><div class="bar-wrap"><div class="bar" style="width:5.0%;background:#f59e0b"></div><span>0.50%</span></div></td>
@@ -321,13 +469,23 @@
           <td><span title="Digital Measuring Microscopes | Olympus" style="color:#22c55e">Digital Measuring Microscopes | Olympus</span> <small>(39)</small></td>
           <td><span style="color:#a78bfa">Digital Measuring Microscopes | Evident Scientific</span> <small>(50)</small></td>
           <td><span title="The digital measuring microscopes from Olympus offer versatility, high reliability, and precision. Discover the range!" style="color:#22c55e">The digital measuring microscopes from Olympus offer versati…</span> <small>(118)</small></td>
-          <td><span style="color:#a78bfa">Achieve precise, high-throughput measurements with Evident's digital measuring microscopes. Explore models for manufacturing and inspection applications.</span> <small>(153)</small></td>
+          <td><span style="color:#a78bfa">Achieve precision measurements with Evident Scientific's digital measuring microscopes. Designed for high throughput and reliability. Explore the STM7 series.</span> <small>(158)</small></td>
           <td class="num">606</td>
           <td class="num">6</td>
           <td><span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/industrial-stereo" target="_blank">material-science-microscopes/industrial-stereo</a></td>
+        <tr class="detail-row" id="row-15" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a detailed comparison table of the STM7 vs. STM7-BSW models showing key specs like measurement range, resolution, magnification, stage travel, and software capabilities — this is what buyers actively compare before purchase.</li><li>Create a section on 'How to Choose a Measuring Microscope' covering selection criteria such as accuracy requirements, sample types, automation needs, and integration with quality management systems. This targets informational queries and builds topical authority.</li><li>Include measurable performance data and tolerances (e.g., measurement repeatability, accuracy specs per ISO standards) prominently on the page. Users searching for coordinate measuring microscopes expect quantified precision claims, not just general descriptions.</li><li>Add content addressing the difference between measuring microscopes and other coordinate measurement tools (CMMs, vision systems, profile projectors) to capture comparison search queries and help users validate that a measuring microscope is the right solution for their application.</li><li>Optimize the H1 and body content to include 'coordinate measuring microscope' as a keyword phrase, since the URL contains 'coordinate-measuring' but the page content focuses on 'digital measuring microscopes' — bridging this mismatch will improve relevance signals for both keyword clusters.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-16')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-16')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/industrial-stereo" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/industrial-stereo</a></td>
           <td class="num">39</td>
           <td class="num">11,476</td>
           <td><div class="bar-wrap"><div class="bar" style="width:3.4%;background:#ef4444"></div><span>0.34%</span></div></td>
@@ -335,55 +493,95 @@
           <td><span title="Industrial Stereo Microscopes | Evident Scientific" style="color:#22c55e">Industrial Stereo Microscopes | Evident Scientific</span> <small>(50)</small></td>
           <td><span style="color:#a78bfa">Industrial Stereo Microscopes | Evident Scientific</span> <small>(50)</small></td>
           <td><span title="Explore Evident Scientific’s range of Laser Confocal Microscopes, ideal for research and industrial applications." style="color:#22c55e">Explore Evident Scientific’s range of Laser Confocal Microsc…</span> <small>(113)</small></td>
-          <td><span style="color:#a78bfa">Discover Evident Scientific's industrial stereo microscopes for precise inspection and quality control. Explore models, specs, and applications.</span> <small>(144)</small></td>
+          <td><span style="color:#a78bfa">Discover industrial stereo microscopes built for inspection, assembly, and quality control. Compare models and find the right fit. Explore our range.</span> <small>(149)</small></td>
           <td class="num">662</td>
           <td class="num">5</td>
           <td><span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/light" target="_blank">material-science-microscopes/light</a></td>
+        <tr class="detail-row" id="row-16" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Fix the meta description mismatch — the current meta references 'Laser Confocal Microscopes' instead of stereo microscopes, which is likely a major contributor to low CTR since users see irrelevant copy in search results.</li><li>Add a comparison table of stereo microscope models with key specs (magnification range, working distance, optical system type, illumination options) so users can quickly evaluate which model fits their application.</li><li>Include a section on common industrial use cases with brief descriptions — e.g., electronics inspection, soldering QC, materials failure analysis, gemology, and manufacturing assembly — to capture long-tail search queries and match user intent.</li><li>Add content explaining how to choose an industrial stereo microscope, covering selection criteria like zoom range vs. fixed magnification, ergonomic considerations for prolonged use, and compatibility with digital imaging accessories.</li><li>Include high-quality application images or short videos showing the microscopes in real industrial environments, along with sample images captured through the optics, to demonstrate image quality and build purchase confidence.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-17')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-17')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/light" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/light</a></td>
           <td class="num">53</td>
           <td class="num">32,455</td>
           <td><div class="bar-wrap"><div class="bar" style="width:1.6%;background:#ef4444"></div><span>0.16%</span></div></td>
           <td><span class="chip" style="color:#f59e0b;border-color:#f59e0b">11.1</span></td>
           <td><span title="Light Microscopes | Evident | Olympus" style="color:#22c55e">Light Microscopes | Evident | Olympus</span> <small>(37)</small></td>
-          <td><span style="color:#a78bfa">Light Microscopes for Material Science | Evident</span> <small>(48)</small></td>
+          <td><span style="color:#a78bfa">Light Microscopes for Material Science | Evident Scientific</span> <small>(59)</small></td>
           <td><span title="Light microscopes are used for quality control applications and detailed examination of newly developed materials, electronic devices, metals, and chemicals." style="color:#ef4444">Light microscopes are used for quality control applications …</span> <small>(157)</small></td>
-          <td><span style="color:#a78bfa">Explore industrial light microscopes for metallurgical analysis, quality control, and materials inspection. Find the right system for your application.</span> <small>(151)</small></td>
+          <td><span style="color:#a78bfa">Explore Evident's light microscopes for material science — inspect metals, electronics, and chemicals with precision. Compare models and find your solution.</span> <small>(156)</small></td>
           <td class="num">825</td>
           <td class="num">5</td>
           <td><span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/metallurgical" target="_blank">material-science-microscopes/metallurgical</a></td>
+        <tr class="detail-row" id="row-17" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a comparison table of all light microscope models on this page, including key specs like magnification range, observation methods (brightfield, darkfield, DIC, polarization), and ideal use cases — users at position ~11 are likely comparison shopping and this would earn featured snippets.</li><li>Create a dedicated 'How to Choose a Light Microscope for Material Science' section that walks users through selection criteria such as sample type, required resolution, reflected vs. transmitted light needs, and budget considerations — this addresses mid-funnel search intent and improves dwell time.</li><li>Add a section covering light microscope observation techniques (brightfield, darkfield, polarized light, DIC, fluorescence) with sample images showing the same material under different methods — this is a high-search-volume subtopic that competitors rank for and it's currently absent from the page.</li><li>Include a 'Light Microscopes vs. Other Microscopy Methods' section comparing light microscopy to SEM, confocal, and digital microscopy for material science applications, explaining when each is appropriate — this captures users earlier in the research phase and builds topical authority.</li><li>Expand the FAQ section to address high-intent questions like 'What magnification do I need for metallographic analysis?', 'What is the difference between upright and inverted metallurgical microscopes?', and 'Can light microscopes measure surface roughness?' — these are specific queries with low competition that can drive long-tail traffic and improve CTR through FAQ rich results.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-18')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-18')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/metallurgical" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/metallurgical</a></td>
           <td class="num">65</td>
           <td class="num">13,556</td>
           <td><div class="bar-wrap"><div class="bar" style="width:4.8%;background:#ef4444"></div><span>0.48%</span></div></td>
           <td><span class="chip" style="color:#22c55e;border-color:#22c55e">8.9</span></td>
           <td><span title="Metallurgical Microscopes | Olympus | Evident" style="color:#22c55e">Metallurgical Microscopes | Olympus | Evident</span> <small>(45)</small></td>
-          <td><span style="color:#a78bfa">Metallurgical Microscopes | Evident Scientific</span> <small>(46)</small></td>
+          <td><span style="color:#a78bfa">Metallurgical Microscopes for Materials Analysis | Evident</span> <small>(58)</small></td>
           <td><span title="Discover our selection of metallurgical microscopes with advanced features for materials science, metallurgy QA, failure analysis, and research." style="color:#22c55e">Discover our selection of metallurgical microscopes with adv…</span> <small>(144)</small></td>
-          <td><span style="color:#a78bfa">Explore metallurgical microscopes for failure analysis, QA, and research. Advanced imaging with precise, repeatable results. Find your ideal system.</span> <small>(148)</small></td>
+          <td><span style="color:#a78bfa">Explore Evident's metallurgical microscopes for metallography, grain size analysis, and failure analysis. Compare models to find the right fit for your lab.</span> <small>(156)</small></td>
           <td class="num">1799</td>
           <td class="num">14</td>
           <td><span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/image-analysis-software" target="_blank">material-science-microscopes/image-analysis-software</a></td>
+        <tr class="detail-row" id="row-18" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a comparison table of the BX53M, GX53, and DSX2000 models showing key specs (magnification range, imaging modes, inverted vs. upright, automation level) so users can quickly evaluate which microscope fits their application without navigating away.</li><li>Create a dedicated section on common metallographic techniques (brightfield, darkfield, DIC, polarized light) with example images captured on each system, explaining when and why each technique is used in metallurgy — this targets long-tail queries and increases dwell time.</li><li>Add structured FAQ schema markup to the existing FAQs section and expand it with high-search-intent questions like 'What is the difference between an inverted and upright metallurgical microscope?' and 'How to choose a microscope for metallographic analysis?' to capture featured snippets.</li><li>Include a section on sample preparation best practices for metallography (mounting, grinding, polishing, etching) since users researching metallurgical microscopes are often evaluating full workflows — this addresses adjacent search intent and positions the page as a comprehensive resource.</li><li>Add customer application case studies or short testimonials from materials science labs showing real-world results (e.g., weld inspection, inclusion analysis, coating thickness measurement) to build trust and differentiate from competitor product listing pages.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-19')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-19')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/image-analysis-software" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/image-analysis-software</a></td>
           <td class="num">86</td>
           <td class="num">14,468</td>
           <td><div class="bar-wrap"><div class="bar" style="width:5.9%;background:#f59e0b"></div><span>0.59%</span></div></td>
           <td><span class="chip" style="color:#ef4444;border-color:#ef4444">24.6</span></td>
           <td><span title="Light Microscope Image Analysis Software | Olympus" style="color:#22c55e">Light Microscope Image Analysis Software | Olympus</span> <small>(50)</small></td>
-          <td><span style="color:#a78bfa">Image Analysis Software for Microscopy | Evident</span> <small>(48)</small></td>
+          <td><span style="color:#a78bfa">Image Analysis Software for Microscopy | Evident Scientific</span> <small>(59)</small></td>
           <td><span title="Our microscope image analysis software offers a smooth flow of acquiring images, filtering, measurement, documentation, and archive. Browse our range today." style="color:#ef4444">Our microscope image analysis software offers a smooth flow …</span> <small>(156)</small></td>
-          <td><span style="color:#a78bfa">Streamline microscope image acquisition, measurement, and documentation with powerful analysis software. Explore our solutions today.</span> <small>(133)</small></td>
+          <td><span style="color:#a78bfa">Streamline microscope image acquisition, measurement, and reporting with Evident Scientific image analysis software. Explore solutions for your application.</span> <small>(156)</small></td>
           <td class="num">722</td>
           <td class="num">11</td>
           <td><span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/slide-scanners" target="_blank">life-science-microscopes/slide-scanners</a></td>
+        <tr class="detail-row" id="row-19" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a dedicated section comparing software packages (e.g., OLYMPUS Stream vs. PRECiV) with a feature matrix table so users can quickly identify which solution fits their workflow.</li><li>Include a section on specific material science use cases — grain size analysis, particle counting, inclusion rating, phase analysis, and porosity measurement — with example images and short workflow descriptions.</li><li>Replace the generic H2 'Digital Cameras' with content that explains camera-software integration and how hardware pairing affects image quality, processing speed, and measurement accuracy.</li><li>Add a 'Standards Compliance' section listing supported industry standards (ASTM E112, ISO 643, etc.) since materials engineers searching for image analysis software often need to meet specific regulatory or QC requirements.</li><li>Include short embedded demo videos or interactive before/after image galleries showing software capabilities like filtering, thresholding, and automated measurement to increase dwell time and engagement.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-20')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-20')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/life-science-microscopes/slide-scanners" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/slide-scanners</a></td>
           <td class="num">171</td>
           <td class="num">72,574</td>
           <td><div class="bar-wrap"><div class="bar" style="width:2.4%;background:#ef4444"></div><span>0.24%</span></div></td>
@@ -391,13 +589,23 @@
           <td><span title="Microscope Slide Scanners | Olympus" style="color:#22c55e">Microscope Slide Scanners | Olympus</span> <small>(35)</small></td>
           <td><span style="color:#a78bfa">Microscope Slide Scanners | Evident Scientific</span> <small>(46)</small></td>
           <td><span title="Digitizing slide data makes it easy to analyze, share, and archive your results. The SLIDEVIEW™ VS200 research slide scanner enables you to capture high-resolution images of your slides for quantitative analysis, so you can make the most of the information your slides have to offer. The optical system is optimized for scanning slides, enabling you to digitize slides for brain, cancer, and stem cell research, as well as drug discovery." style="color:#ef4444">Digitizing slide data makes it easy to analyze, share, and a…</span> <small>(438)</small></td>
-          <td><span style="color:#a78bfa">Digitize slides in high resolution for faster analysis, easy sharing, and reliable archiving. Explore our SLIDEVIEW™ research slide scanner solutions.</span> <small>(150)</small></td>
+          <td><span style="color:#a78bfa">Digitize slides in high resolution for faster analysis, sharing, and archiving. Explore the SLIDEVIEW VS200 research slide scanner and see how it fits your lab.</span> <small>(160)</small></td>
           <td class="num">600</td>
           <td class="num">3</td>
           <td><span class="badge" style="background:#ef4444">Meta Issue</span> <span class="badge" style="background:#f59e0b">Low CTR</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/upright" target="_blank">life-science-microscopes/upright</a></td>
+        <tr class="detail-row" id="row-20" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a comparison table of slide scanner specifications (scan speed, resolution, slide capacity, supported fluorescence channels) so researchers can quickly evaluate the VS200 against competitors and against their own requirements.</li><li>Create a dedicated section on whole slide imaging (WSI) workflows — this is a high-search-volume related term that users expect to see addressed, covering file formats, compatibility with image analysis software like QuPath or HALO, and integration with LIMS.</li><li>Include application-specific use case sections with sample images for key research areas (digital pathology, neuroscience brain mapping, oncology/tumor microenvironment, stem cell colony screening) to match the long-tail queries researchers use and improve dwell time.</li><li>Add an FAQ section addressing common buyer questions: maximum magnification, z-stack and extended focus capabilities, throughput for batch scanning, supported slide sizes (standard vs. double-width), and software licensing — these map to informational queries that currently bypass the page.</li><li>Feature customer testimonials or brief case studies from published research that used the VS200, linking to publications where possible. This builds E-E-A-T signals and gives prospective buyers confidence while naturally incorporating relevant long-tail keywords.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-21')" style="cursor:default">
+          <td><a href="https://evidentscientific.com/en/life-science-microscopes/upright" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/upright</a></td>
           <td class="num">0</td>
           <td class="num">1</td>
           <td><div class="bar-wrap"><div class="bar" style="width:0.0%;background:#ef4444"></div><span>0.00%</span></div></td>
@@ -410,8 +618,8 @@
           <td class="num">17</td>
           <td><span class="badge ok">OK</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/digital-cameras/mono" target="_blank">digital-cameras/mono</a></td>
+        <tr class="main-row" onclick="toggleRow('row-22')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-22')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/digital-cameras/mono" target="_blank" onclick="event.stopPropagation()">digital-cameras/mono</a></td>
           <td class="num">27</td>
           <td class="num">3,622</td>
           <td><div class="bar-wrap"><div class="bar" style="width:7.5%;background:#f59e0b"></div><span>0.75%</span></div></td>
@@ -419,13 +627,23 @@
           <td><span title="Monochrome Cameras for Digital Microscopes | Evident | Olympus" style="color:#ef4444">Monochrome Cameras for Digital Microscopes | Evident | Olympus</span> <small>(62)</small></td>
           <td><span style="color:#a78bfa">Monochrome Microscope Cameras | Evident Scientific</span> <small>(50)</small></td>
           <td><span title="Browse our range of Evident Scientific monochrome microscope cameras for all your digital imaging needs." style="color:#22c55e">Browse our range of Evident Scientific monochrome microscope…</span> <small>(104)</small></td>
-          <td><span style="color:#a78bfa">Capture high-sensitivity, low-noise digital images with Evident monochrome microscope cameras. Explore our range for fluorescence and advanced imaging.</span> <small>(151)</small></td>
+          <td><span style="color:#a78bfa">Explore Evident Scientific monochrome cameras for high-sensitivity fluorescence and low-light microscopy imaging. Compare models to find your ideal fit.</span> <small>(152)</small></td>
           <td class="num">255</td>
           <td class="num">3</td>
           <td><span class="badge" style="background:#ef4444">Title Issue</span> <span class="badge" style="background:#8b5cf6">Thin Content</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/life-science-microscopes/objectives" target="_blank">life-science-microscopes/objectives</a></td>
+        <tr class="detail-row" id="row-22" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a detailed introductory section explaining why monochrome cameras outperform color cameras for fluorescence, low-light, and quantitative imaging applications — this directly addresses what users searching this term need to understand and resolves the thin content issue.</li><li>Include a comparison table of all monochrome camera models showing key specs side-by-side: sensor type, resolution, quantum efficiency, frame rate, read noise, and dynamic range. This is exactly what researchers and procurement specialists expect when evaluating cameras.</li><li>Create a 'How to Choose a Monochrome Microscope Camera' guidance section covering use-case matching (e.g., live-cell imaging vs. fixed-sample fluorescence vs. ratio imaging), helping users self-select the right model and capturing long-tail informational queries.</li><li>Add application-specific content blocks with sample images captured by each camera — for example, fluorescence micrographs, FRET imaging, calcium ratio imaging, or TIRF — to demonstrate real-world performance and improve dwell time.</li><li>Include an FAQ section addressing common questions such as 'monochrome vs. color camera for microscopy,' 'what is quantum efficiency,' and 'best camera for fluorescence imaging' to capture featured snippets and related search queries.</li></ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="main-row" onclick="toggleRow('row-23')" style="cursor:default">
+          <td><a href="https://evidentscientific.com/en/life-science-microscopes/objectives" target="_blank" onclick="event.stopPropagation()">life-science-microscopes/objectives</a></td>
           <td class="num">295</td>
           <td class="num">21,955</td>
           <td><div class="bar-wrap"><div class="bar" style="width:13.4%;background:#22c55e"></div><span>1.34%</span></div></td>
@@ -438,8 +656,8 @@
           <td class="num">9</td>
           <td><span class="badge ok">OK</span></td>
         </tr>
-        <tr>
-          <td><a href="https://evidentscientific.com/en/material-science-microscopes/objectives/white-light-interferometry" target="_blank">material-science-microscopes/objectives/white-light-interferometry</a></td>
+        <tr class="main-row" onclick="toggleRow('row-24')" style="cursor:pointer">
+          <td><button class="toggle-btn" onclick="toggleRow('row-24')" title="Show content recommendations">▶</button> <a href="https://evidentscientific.com/en/material-science-microscopes/objectives/white-light-interferometry" target="_blank" onclick="event.stopPropagation()">material-science-microscopes/objectives/white-light-interferometry</a></td>
           <td class="num">84</td>
           <td class="num">6,543</td>
           <td><div class="bar-wrap"><div class="bar" style="width:12.8%;background:#22c55e"></div><span>1.28%</span></div></td>
@@ -447,10 +665,20 @@
           <td><span title="White Light Interferometric Objective Lenses | Olympus | Evident" style="color:#ef4444">White Light Interferometric Objective Lenses | Olympus | Evi…</span> <small>(64)</small></td>
           <td><span style="color:#a78bfa">White Light Interferometric Objective Lenses | Evident</span> <small>(54)</small></td>
           <td><span title="Our white light interferometric (WLI) Mirau objective lenses deliver reliable, high-resolution data capture for precise 3D surface measurements." style="color:#22c55e">Our white light interferometric (WLI) Mirau objective lenses…</span> <small>(144)</small></td>
-          <td><span style="color:#a78bfa">Achieve precise 3D surface measurements with Mirau WLI objective lenses. Explore high-resolution, reliable optical performance for metrology applications.</span> <small>(154)</small></td>
+          <td><span style="color:#a78bfa">Mirau WLI objective lenses for precise 3D surface measurements. Achieve high-resolution, repeatable metrology data. Explore specs and configurations.</span> <small>(149)</small></td>
           <td class="num">815</td>
           <td class="num">0</td>
           <td><span class="badge" style="background:#ef4444">Title Issue</span></td>
+        </tr>
+        <tr class="detail-row" id="row-24" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list"><li>Add a dedicated section explaining how white light interferometry works, including a diagram of the Mirau interferometer optical path — users searching this term often need foundational understanding before evaluating objectives</li><li>Include a comparison table showing key differences between available Mirau objective magnifications (e.g., 5x, 10x, 20x, 50x) with lateral resolution, field of view, working distance, and recommended surface types for each</li><li>Add application examples with images showing specific surface measurement results (e.g., semiconductor wafer roughness, machined metal surface topography, thin-film step height) to help users match objectives to their use case</li><li>Create a section addressing common selection criteria: when to choose WLI over confocal or phase-shifting interferometry objectives, including trade-offs in vertical resolution, speed, and surface compatibility</li><li>Add FAQ schema markup covering questions like 'What is white light interferometry used for?', 'What is a Mirau objective?', and 'What surfaces can WLI measure?' to capture featured snippet and People Also Ask placements</li></ul>
+              </div>
+            </div>
+          </td>
         </tr>
   </tbody>
 </table>

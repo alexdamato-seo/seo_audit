@@ -134,6 +134,7 @@ def audit_url(entry):
 class SEOSuggestion(BaseModel):
     suggested_title: str
     suggested_meta: str
+    content_recommendations: list[str]
 
 
 def slug_to_label(slug):
@@ -179,7 +180,26 @@ def generate_suggestions_local(result):
     if len(base_meta) > 155:
         base_meta = base_meta[:152].rsplit(" ", 1)[0] + "..."
 
-    return sug_title, base_meta
+    # Local content recommendations based on word count and H2 gaps
+    recs = []
+    word_count = result.get("word_count", 0)
+    h2_list = [h.strip() for h in result.get("h2s", "").split(",") if h.strip()]
+
+    if word_count < 300:
+        recs.append(f"Page has only ~{word_count} words — expand to at least 400–600 words with product details, use cases, and specifications.")
+    if len(h2_list) < 3:
+        recs.append(f"Only {len(h2_list)} H2(s) found — add sections covering: key features, applications, technical specs, and FAQs.")
+    if not result.get("h1"):
+        recs.append("Missing H1 — add a clear H1 that includes the primary keyword.")
+    if result.get("ctr", 1) < 0.5 and result.get("impressions", 0) > 5000:
+        recs.append(f"Low CTR ({result['ctr']}%) despite {result['impressions']:,} impressions — page ranks but doesn't earn clicks. Rewrite title and meta to be more compelling and benefit-focused.")
+    if result.get("images_missing_alt", 0) > 0:
+        recs.append(f"{result['images_missing_alt']} image(s) missing alt text — add descriptive alt text for accessibility and image SEO.")
+    if not recs:
+        recs.append("No major content gaps detected — focus on meta/title optimizations above.")
+
+    content_recs = recs
+    return sug_title, base_meta, content_recs
 
 
 def generate_suggestions_ai(client, result):
@@ -199,17 +219,21 @@ def generate_suggestions_ai(client, result):
         f"Write an improved title tag (strict max 60 characters) and meta description "
         f"(strict max 155 characters). The title should lead with the primary keyword. "
         f"The meta should include a clear benefit and a soft CTA. "
-        f"Do not pad to fill the limit — be concise."
+        f"Do not pad to fill the limit — be concise.\n\n"
+        f"Also provide 3–5 specific, actionable content recommendations for this page. "
+        f"Focus on: what topics or sections are missing, what would improve rankings and CTR, "
+        f"and what a user searching for this topic would expect to find. "
+        f"Be specific to this page's subject matter, not generic SEO advice."
     )
 
     response = client.messages.parse(
         model="claude-opus-4-6",
-        max_tokens=300,
+        max_tokens=600,
         messages=[{"role": "user", "content": prompt}],
         output_format=SEOSuggestion,
     )
     s = response.parsed_output
-    return s.suggested_title, s.suggested_meta
+    return s.suggested_title, s.suggested_meta, s.content_recommendations
 
 
 FLAG_COLORS = {
@@ -275,7 +299,7 @@ def generate_html(results, flag_counts):
         </div>'''
 
     rows = ""
-    for r in results:
+    for i, r in enumerate(results):
         slug = r["url"].replace("https://evidentscientific.com/en/", "")
         sug_title = r.get("suggested_title", "")
         sug_meta  = r.get("suggested_meta", "")
@@ -295,9 +319,29 @@ def generate_html(results, flag_counts):
             if sug_meta else '<span style="color:#475569">—</span>'
         )
 
+        content_recs = r.get("content_recommendations", [])
+        row_id = f"row-{i}"
+        if content_recs:
+            recs_html = "".join(f"<li>{rec}</li>" for rec in content_recs)
+            detail_row = f'''
+        <tr class="detail-row" id="{row_id}" style="display:none">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div class="detail-section">
+                <div class="detail-label">Content Recommendations</div>
+                <ul class="rec-list">{recs_html}</ul>
+              </div>
+            </div>
+          </td>
+        </tr>'''
+            toggle_btn = f'<button class="toggle-btn" onclick="toggleRow(\'{row_id}\')" title="Show content recommendations">▶</button> '
+        else:
+            detail_row = ""
+            toggle_btn = ""
+
         rows += f'''
-        <tr>
-          <td><a href="{r["url"]}" target="_blank">{slug}</a></td>
+        <tr class="main-row" onclick="toggleRow(\'{row_id}\')" style="cursor:{'pointer' if content_recs else 'default'}">
+          <td>{toggle_btn}<a href="{r["url"]}" target="_blank" onclick="event.stopPropagation()">{slug}</a></td>
           <td class="num">{r["clicks"]:,}</td>
           <td class="num">{r["impressions"]:,}</td>
           <td>{ctr_bar(r["ctr"])}</td>
@@ -309,7 +353,7 @@ def generate_html(results, flag_counts):
           <td class="num">{r.get("word_count","—")}</td>
           <td class="num">{r.get("images_missing_alt","—")}</td>
           <td>{flag_badges(r.get("flags","OK"))}</td>
-        </tr>'''
+        </tr>{detail_row}'''
 
     from datetime import date
     run_date = date.today().strftime("%B %d, %Y")
@@ -364,7 +408,35 @@ def generate_html(results, flag_counts):
   .badge.ok {{ background: #166534; color: #bbf7d0; }}
 
   footer {{ margin-top: 2rem; font-size: 0.75rem; color: #475569; text-align: center; }}
+
+  /* Expandable detail rows */
+  .toggle-btn {{ background: none; border: none; color: #60a5fa; cursor: pointer;
+                 font-size: 0.75rem; padding: 0 4px 0 0; transition: transform .2s; }}
+  .toggle-btn.open {{ transform: rotate(90deg); }}
+  .detail-row td {{ padding: 0; }}
+  .detail-panel {{ background: #1e293b; border-top: 1px solid #334155;
+                   padding: 1rem 1.2rem 1rem 2.5rem; }}
+  .detail-section {{ margin-bottom: 0.75rem; }}
+  .detail-label {{ font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+                   letter-spacing: .07em; color: #94a3b8; margin-bottom: 0.4rem; }}
+  .rec-list {{ list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }}
+  .rec-list li {{ font-size: 0.82rem; color: #cbd5e1; padding-left: 1.2rem; position: relative; }}
+  .rec-list li::before {{ content: "→"; position: absolute; left: 0; color: #a78bfa; }}
 </style>
+<script>
+  function toggleRow(id) {{
+    const row = document.getElementById(id);
+    if (!row) return;
+    const btn = row.previousElementSibling.querySelector('.toggle-btn');
+    if (row.style.display === 'none') {{
+      row.style.display = '';
+      if (btn) btn.classList.add('open');
+    }} else {{
+      row.style.display = 'none';
+      if (btn) btn.classList.remove('open');
+    }}
+  }}
+</script>
 </head>
 <body>
 <header>
@@ -417,9 +489,10 @@ def main():
     # Always run local rule-based suggestions first
     print(f"\nGenerating suggestions for {len(flagged)} flagged URL(s)...")
     for r in flagged:
-        sug_title, sug_meta = generate_suggestions_local(r)
-        r["suggested_title"] = sug_title
-        r["suggested_meta"]  = sug_meta
+        sug_title, sug_meta, content_recs = generate_suggestions_local(r)
+        r["suggested_title"]          = sug_title
+        r["suggested_meta"]           = sug_meta
+        r["content_recommendations"]  = content_recs
 
     # Upgrade to AI suggestions if API key is available
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -428,9 +501,10 @@ def main():
         print("API key found — upgrading to AI suggestions...")
         for r in flagged:
             try:
-                sug_title, sug_meta = generate_suggestions_ai(ai_client, r)
-                r["suggested_title"] = sug_title
-                r["suggested_meta"]  = sug_meta
+                sug_title, sug_meta, content_recs = generate_suggestions_ai(ai_client, r)
+                r["suggested_title"]         = sug_title
+                r["suggested_meta"]          = sug_meta
+                r["content_recommendations"] = content_recs
                 print(f"  AI done: {r['url'].split('/en/')[-1]}")
             except Exception as e:
                 print(f"  AI failed for {r['url'].split('/en/')[-1]}, keeping rule-based suggestion.")
@@ -440,6 +514,7 @@ def main():
         "url", "clicks", "impressions", "ctr", "position",
         "title", "title_len", "suggested_title",
         "meta_description", "meta_len", "suggested_meta",
+        "content_recommendations",
         "h1", "h2s", "word_count", "images_missing_alt",
         "canonical", "flags", "error",
     ]
