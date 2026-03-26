@@ -128,6 +128,175 @@ def audit_url(entry):
     }
 
 
+FLAG_COLORS = {
+    "Low CTR":     "#f59e0b",
+    "Meta Issue":  "#ef4444",
+    "Title Issue": "#ef4444",
+    "Missing H1":  "#ef4444",
+    "Thin Content":"#8b5cf6",
+}
+
+
+def flag_badges(flags_str):
+    if flags_str == "OK":
+        return '<span class="badge ok">OK</span>'
+    parts = flags_str.split(" | ")
+    badges = []
+    for f in parts:
+        color = FLAG_COLORS.get(f, "#6b7280")
+        badges.append(f'<span class="badge" style="background:{color}">{f}</span>')
+    return " ".join(badges)
+
+
+def ctr_bar(ctr):
+    pct = min(ctr * 10, 100)  # scale: 10% CTR = full bar
+    color = "#22c55e" if ctr >= 1.0 else "#f59e0b" if ctr >= 0.5 else "#ef4444"
+    return (
+        f'<div class="bar-wrap"><div class="bar" style="width:{pct:.1f}%;background:{color}"></div>'
+        f'<span>{ctr:.2f}%</span></div>'
+    )
+
+
+def position_chip(pos):
+    color = "#22c55e" if pos <= 10 else "#f59e0b" if pos <= 20 else "#ef4444"
+    return f'<span class="chip" style="color:{color};border-color:{color}">{pos:.1f}</span>'
+
+
+def char_cell(text, length, warn, limit):
+    if not text:
+        return '<span style="color:#ef4444">Missing</span>'
+    color = "#ef4444" if length > limit else "#22c55e"
+    short = (text[:60] + "…") if len(text) > 63 else text
+    return f'<span title="{text}" style="color:{color}">{short}</span> <small>({length})</small>'
+
+
+def generate_html(results, flag_counts):
+    total = len(results)
+    ok_count = sum(1 for r in results if r.get("flags") == "OK")
+
+    summary_cards = ""
+    card_meta = [
+        ("Total URLs", total, "#3b82f6"),
+        ("Clean", ok_count, "#22c55e"),
+        ("Low CTR", flag_counts.get("Low CTR", 0), "#f59e0b"),
+        ("Meta Issues", flag_counts.get("Meta Issue", 0), "#ef4444"),
+        ("Title Issues", flag_counts.get("Title Issue", 0), "#ef4444"),
+        ("Thin Content", flag_counts.get("Thin Content", 0), "#8b5cf6"),
+    ]
+    for label, val, color in card_meta:
+        summary_cards += f'''
+        <div class="card">
+          <div class="card-val" style="color:{color}">{val}</div>
+          <div class="card-label">{label}</div>
+        </div>'''
+
+    rows = ""
+    for r in results:
+        slug = r["url"].replace("https://evidentscientific.com/en/", "")
+        rows += f'''
+        <tr>
+          <td><a href="{r["url"]}" target="_blank">{slug}</a></td>
+          <td class="num">{r["clicks"]:,}</td>
+          <td class="num">{r["impressions"]:,}</td>
+          <td>{ctr_bar(r["ctr"])}</td>
+          <td>{position_chip(r["position"])}</td>
+          <td>{char_cell(r.get("title",""), r.get("title_len",0), True, 60)}</td>
+          <td>{char_cell(r.get("meta_description",""), r.get("meta_len",0), True, 155)}</td>
+          <td class="num">{r.get("word_count","—")}</td>
+          <td class="num">{r.get("images_missing_alt","—")}</td>
+          <td>{flag_badges(r.get("flags","OK"))}</td>
+        </tr>'''
+
+    from datetime import date
+    run_date = date.today().strftime("%B %d, %Y")
+
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEO Audit — Evident Scientific</title>
+<style>
+  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 2rem; }}
+  h1   {{ font-size: 1.6rem; font-weight: 700; color: #f8fafc; }}
+  .sub {{ color: #94a3b8; font-size: 0.85rem; margin-top: 0.25rem; }}
+  header {{ margin-bottom: 2rem; }}
+
+  /* Summary cards */
+  .cards {{ display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }}
+  .card  {{ background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+            padding: 1.1rem 1.4rem; min-width: 120px; }}
+  .card-val   {{ font-size: 2rem; font-weight: 700; line-height: 1; }}
+  .card-label {{ font-size: 0.75rem; color: #94a3b8; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: .05em; }}
+
+  /* Table */
+  .table-wrap {{ overflow-x: auto; border-radius: 10px; border: 1px solid #334155; }}
+  table {{ width: 100%; border-collapse: collapse; font-size: 0.82rem; }}
+  thead tr {{ background: #1e293b; }}
+  thead th {{ padding: 0.7rem 0.9rem; text-align: left; font-weight: 600;
+              color: #94a3b8; text-transform: uppercase; letter-spacing: .05em;
+              white-space: nowrap; border-bottom: 1px solid #334155; }}
+  tbody tr {{ border-bottom: 1px solid #1e293b; transition: background .15s; }}
+  tbody tr:hover {{ background: #1e293b; }}
+  tbody td {{ padding: 0.65rem 0.9rem; vertical-align: middle; }}
+  td a {{ color: #60a5fa; text-decoration: none; }}
+  td a:hover {{ text-decoration: underline; }}
+  .num {{ text-align: right; font-variant-numeric: tabular-nums; }}
+
+  /* CTR bar */
+  .bar-wrap {{ display: flex; align-items: center; gap: 0.5rem; min-width: 110px; }}
+  .bar      {{ height: 6px; border-radius: 3px; min-width: 2px; flex-shrink: 0; }}
+  .bar-wrap span {{ font-size: 0.8rem; color: #cbd5e1; white-space: nowrap; }}
+
+  /* Position chip */
+  .chip {{ font-size: 0.78rem; font-weight: 600; border: 1.5px solid; border-radius: 20px;
+           padding: 1px 8px; white-space: nowrap; }}
+
+  /* Badges */
+  .badge {{ display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 2px 7px;
+            border-radius: 20px; color: #fff; white-space: nowrap; }}
+  .badge.ok {{ background: #166534; color: #bbf7d0; }}
+
+  footer {{ margin-top: 2rem; font-size: 0.75rem; color: #475569; text-align: center; }}
+</style>
+</head>
+<body>
+<header>
+  <h1>SEO Audit — Evident Scientific</h1>
+  <p class="sub">GSC data: last 3 months &nbsp;·&nbsp; Audited {run_date} &nbsp;·&nbsp; {total} URLs</p>
+</header>
+
+<div class="cards">{summary_cards}
+</div>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>URL</th>
+      <th>Clicks</th>
+      <th>Impressions</th>
+      <th>CTR</th>
+      <th>Position</th>
+      <th>Title (limit 60)</th>
+      <th>Meta Description (limit 155)</th>
+      <th>Words</th>
+      <th>Imgs No Alt</th>
+      <th>Flags</th>
+    </tr>
+  </thead>
+  <tbody>{rows}
+  </tbody>
+</table>
+</div>
+
+<footer>Generated by seo_audit.py</footer>
+</body>
+</html>'''
+
+
 def main():
     results = []
     for i, entry in enumerate(urls_with_gsc):
@@ -136,27 +305,33 @@ def main():
         if i < len(urls_with_gsc) - 1:
             time.sleep(1)  # polite crawl delay
 
-    output_file = "seo_audit_results.csv"
+    # CSV
     fieldnames = [
         "url", "clicks", "impressions", "ctr", "position",
         "title", "title_len", "meta_description", "meta_len",
         "h1", "h2s", "word_count", "images_missing_alt",
         "canonical", "flags", "error",
     ]
-
-    with open(output_file, "w", newline="", encoding="utf-8") as f:
+    with open("seo_audit_results.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(results)
 
-    print(f"\nDone. Results saved to {output_file}")
-
-    # Summary
+    # Flag summary
     flag_counts = {}
     for r in results:
         for flag in r.get("flags", "").split(" | "):
             if flag and flag != "OK":
                 flag_counts[flag] = flag_counts.get(flag, 0) + 1
+
+    # HTML report
+    html = generate_html(results, flag_counts)
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html)
+
+    print("\nDone.")
+    print("  seo_audit_results.csv")
+    print("  index.html")
 
     if flag_counts:
         print("\nFlag summary:")
